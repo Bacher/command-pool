@@ -14,6 +14,13 @@
     "type": "git",
     "url": "git+https://github.com/Bacher/command-pool"
   },
-  "author": "Bacher <bacherko@gmail.com>",
-  "license": "GPL-2.0"
+  "author": {
+    "name": "Ilya 'Bacher' Lebedev",
+    "email": "bacherko@gmail.com>"
+  },
+  "license": "GPL-2.0",
+  "files": [
+    "command-pool.js",
+    "test.js"
+  ]
 }
