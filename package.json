@@ -1,0 +1,19 @@
+{
+  "name": "command-pool",
+  "version": "0.1.0",
+  "description": "",
+  "main": "command-pool.js",
+  "scripts": {
+    "test": "node test"
+  },
+  "keywords": [
+    "js",
+    "library"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Bacher/command-pool"
+  },
+  "author": "Bacher <bacherko@gmail.com>",
+  "license": "GPL-2.0"
+}
