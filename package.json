@@ -1,10 +1,13 @@
 {
   "name": "command-pool",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "",
+  "engines": {
+    "node": ">=0.12"
+  },
   "main": "command-pool.js",
   "scripts": {
-    "test": "node test"
+    "test": "mocha tests/main.js"
   },
   "keywords": [
     "js",
@@ -22,5 +25,9 @@
   "files": [
     "command-pool.js",
     "test.js"
-  ]
+  ],
+  "dependencies": {
+    "mocha": "^2.3.3",
+    "chai": "^3.4.0"
+  }
 }

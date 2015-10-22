@@ -2,6 +2,12 @@
 
 Library for limiting parallel work.
 
+### Installation:
+
+````shell
+npm install --save command-pool
+````
+
 ### Usage:
 
 #### API:
@@ -16,8 +22,8 @@ CommandPool.start(commandArguments, options, callback);
 * options (Optional, Object|Number) - Options, if Number then uses as options.parallel (see below);
     * options.parallel (Optional, Number) - Count of parallel work tasks;
     * options.tryCount (Optional, Number, Default = 1) - Count of try run task (in case of reject or throwing Error);
-    * options.stopOnFirstError (Optional, Boolean, Default = true) - If it is not needed to reject when occur error;
-* callback (Function) - Function that call on task, **must return a Promise**;
+    * options.continueWithErrors (Optional, Boolean, Default = false) - If it is not needed to reject when occur error;
+* callback (Function) - Function that call on task, **may return a Promise**;
 
 #### Example:
 ````javascript
@@ -55,3 +61,6 @@ CommandPool.start(6, 3, function(i) {
 5 resolved
 RESULT: [ 'OK', 'OK', 'OK', 'OK', 'OK', 'OK' ]
 ````
+
+#### Warning:
+Work only in node version >= 0.12.

@@ -1,12 +1,16 @@
 
 'use strict';
 
+function noop() {}
+
 function startCommandPool(commands, options, callback) {
     return new Promise(function(resolve, reject) {
         var isForEach = Array.isArray(commands);
         var isIterCount = !isForEach && Number.isInteger(commands);
         var count = isForEach ? commands.length : commands;
+        var lastIndex = count - 1;
         var results = [];
+        var end = false;
 
         var badTries = {};
 
@@ -21,27 +25,20 @@ function startCommandPool(commands, options, callback) {
             };
         }
 
-        var index = 0;
+        var index = -1;
         var inWork = 0;
         var MAX = options.parallel || Infinity;
         var TRY_COUNT = options.tryCount || 1;
-        var stopOnFirstError = options.stopOnFirstError || true;
-        var emergencyStop = false;
+        var continueWithErrors = options.continueWithErrors || false;
         var error = null;
 
         if (!isForEach && !isIterCount) {
             throw new Error('Unsupported input type.');
         }
 
-        while (inWork < MAX) {
-            inWork++;
-            callback(isForEach ? commands[index] : index).then(onSuccess.bind(null, index), onFail.bind(null, index));
-
+        while (inWork < MAX && index !== lastIndex && !end) {
             index++;
-
-            if (index === count) {
-                break;
-            }
+            startCommand(index);
         }
 
         function onSuccess(i, data) {
@@ -58,32 +55,49 @@ function startCommandPool(commands, options, callback) {
             badTries[i]++;
 
             if (TRY_COUNT > badTries[i]) {
-                inWork++;
-                callback(isForEach ? commands[i] : i).then(onSuccess.bind(null, i), onFail.bind(null, i));
+                startCommand(i);
 
-            } else if (!error) {
+            } else if (!error && !continueWithErrors) {
                 error = er;
+                runNext(true);
+            }
+        }
 
-                if (stopOnFirstError) {
-                    emergencyStop = true;
+        function runNext(checkExit) {
+            if (!end) {
+                if (inWork === 0 && error) {
+                    reject(error);
+                    end = true;
+
+                } else if (inWork === 0 && index === lastIndex) {
+                    resolve(results);
+                    end = true;
+
+                } else if (index !== lastIndex && (!error || continueWithErrors) && !checkExit) {
+                    index++;
+                    startCommand(index);
                 }
             }
         }
 
-        function runNext() {
-            if (inWork === 0 && emergencyStop) {
-                reject(error);
+        function startCommand(index) {
+            inWork++;
+            var result;
 
-            } else if (inWork === 0 && index === count) {
-                resolve(results);
+            try {
+                result = callback(isForEach ? commands[index] : index);
+            } catch(e) {
+                onFail(index, e);
+                return;
+            }
 
-            } else if (index !== count) {
-                inWork++;
-                callback(isForEach ? commands[index] : index).then(onSuccess.bind(null, index), onFail.bind(null, index));
-
-                index++;
+            if (result instanceof Promise) {
+                result.then(onSuccess.bind(null, index), onFail.bind(null, index));
+            } else {
+                onSuccess(index, result);
             }
         }
+
     });
 }
 

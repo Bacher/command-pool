@@ -1,5 +1,5 @@
 
-var CommandPool = require('./command-pool');
+var CommandPool = require('./../command-pool');
 
 var result = CommandPool.start(10, {
     parallel: 3,
