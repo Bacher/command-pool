@@ -1,6 +1,6 @@
 {
   "name": "command-pool",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "",
   "engines": {
     "node": ">=0.12"
@@ -24,7 +24,7 @@
   "license": "GPL-2.0",
   "files": [
     "command-pool.js",
-    "test.js"
+    "tests/main.js"
   ],
   "dependencies": {
     "mocha": "^2.3.3",

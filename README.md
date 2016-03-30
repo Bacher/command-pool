@@ -4,9 +4,9 @@ Library for limiting parallel work.
 
 ### Installation:
 
-````shell
+```
 npm install --save command-pool
-````
+```
 
 ### Usage:
 
@@ -14,39 +14,40 @@ npm install --save command-pool
 
 Static method **.start** (returns a Promise):
 
-````javascript
-CommandPool.start(commandArguments, options, callback);
-````
+```javascript
+CommandPool.start(commandArguments, [parallelCount], callback);
+```
+* commandArguments (Array) - Array of arguments for commands or count of iterations;
+* parallelCount (Optional, Number, Default = 1) - Count of parallel work tasks;
+* callback (Function(arg, i, next)) - Function that calls on task, **you must return a Promise or call next()**;
 
-* commandArguments (Array|Number) - Array of arguments for commands or count of iterations;
-* options (Optional, Object|Number) - Options, if Number then uses as options.parallel (see below);
-    * options.parallel (Optional, Number) - Count of parallel work tasks;
-    * options.tryCount (Optional, Number, Default = 1) - Count of try run task (in case of reject or throwing Error);
-    * options.continueWithErrors (Optional, Boolean, Default = false) - If it is not needed to reject when occur error;
-* callback (Function) - Function that call on task, **may return a Promise**;
+```javascript
+CommandPool.start(tasksCount, [parallelCount], callback);
+```
+* tasksCount (Number) - Count of iterations;
+* parallelCount (Optional, Number, Default = 1) - Count of parallel work tasks;
+* callback (Function(i, next)) - Function that calls on task, **you must return a Promise or call next()**;
 
 #### Example:
-````javascript
+```javascript
 var CommandPool = require('command-pool');
 
-CommandPool.start(6, 3, function(i) {
-    return new Promise(function(resolve, reject) {
-        console.log('%s started', i);
+CommandPool.start(5, 3, function(i) {
+    console.log('%s started', i);
 
-        setTimeout(function() {
-            console.log('%s resolved', i);
-            resolve('OK');
-        }, Math.floor(Math.random() * 2000));
-    });
+    setTimeout(function() {
+        console.log('%s resolved', i);
+        next(null, 'OK');
+    }, Math.floor(Math.random() * 2000));
 }).then(function(data) {
     console.log('RESULT:', data);
 }, function(error) {
     console.log('ERROR:', error);
 });
-````
+```
 
 #### Output:
-````
+```
 0 started
 1 started
 2 started
@@ -55,12 +56,10 @@ CommandPool.start(6, 3, function(i) {
 1 resolved
 4 started
 3 resolved
-5 started
 2 resolved
 4 resolved
-5 resolved
-RESULT: [ 'OK', 'OK', 'OK', 'OK', 'OK', 'OK' ]
-````
+RESULT: [ 'OK', 'OK', 'OK', 'OK', 'OK' ]
+```
 
-#### Warning:
+#### Caution:
 Work only in node version >= 0.12.
