@@ -32,7 +32,7 @@ CommandPool.start(tasksCount, [parallelCount], callback);
 ```javascript
 var CommandPool = require('command-pool');
 
-CommandPool.start(5, 3, function(i) {
+CommandPool.start(5, 3, function(i, next) {
     console.log('%s started', i);
 
     setTimeout(function() {
